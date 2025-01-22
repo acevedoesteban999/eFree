@@ -1,14 +1,12 @@
 #include "eFree.h"
 
 esp_err_t efree_init(eFree *efree) {
-    if (efree) {
+    if (!efree) 
         return ESP_ERR_INVALID_ARG;
-    }
 
     efree->stack = malloc(sizeof(efree_data*) * EFREE_INITIAL_CAPACITY);
-    if (!efree->stack) {
+    if (!efree->stack) 
         return ESP_ERR_NO_MEM;
-    }
 
     efree->length = 0;
     efree->capacity = EFREE_INITIAL_CAPACITY;
@@ -42,7 +40,8 @@ esp_err_t efree_push(eFree *efree, void *ptr, efree_fn free_function) {
 }
 
 void efree_free(eFree *efree) {
-    if (!efree) return;
+    if (!efree) 
+        return;
 
     for (int i = efree->length - 1; i >= 0; i--) {
         if (efree->stack[i]) {
@@ -53,8 +52,8 @@ void efree_free(eFree *efree) {
             free(efree->stack[i]);
         }
     }
-
-    free(efree->stack);
+    if(efree->stack)
+        free(efree->stack);
     efree->length = 0;
     efree->capacity = 0;
 }

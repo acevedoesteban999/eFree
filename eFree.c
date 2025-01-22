@@ -16,26 +16,23 @@ esp_err_t efree_init(eFree *efree) {
 }
 
 esp_err_t efree_push(eFree *efree, void *ptr, efree_fn free_function) {
-    if (!efree || !ptr) {
+    if (!efree || !ptr)
         return ESP_ERR_INVALID_ARG;
-    }
 
     if (efree->length >= efree->capacity) {
         unsigned new_capacity = efree->capacity + EFREE_INITIAL_CAPACITY;
         efree_data **new_items = realloc(efree->stack, sizeof(efree_data*) * new_capacity);
         
-        if (!new_items) {
+        if (!new_items)
             return ESP_ERR_NO_MEM;
-        }
 
         efree->stack = new_items;
         efree->capacity = new_capacity;
     }
 
     efree_data *item = malloc(sizeof(efree_data));
-    if (!item) {
+    if (!item)
         return ESP_ERR_NO_MEM;
-    }
 
     item->ptr = ptr;
     item->free_function = free_function;
@@ -49,11 +46,10 @@ void efree_free(eFree *efree) {
 
     for (int i = efree->length - 1; i >= 0; i--) {
         if (efree->stack[i]) {
-            if (efree->stack[i]->free_function) {
+            if (efree->stack[i]->free_function)
                 efree->stack[i]->free_function(efree->stack[i]->ptr);
-            } else {
+            else
                 free(efree->stack[i]->ptr);
-            }
             free(efree->stack[i]);
         }
     }
